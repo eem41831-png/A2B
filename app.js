@@ -259,6 +259,7 @@ class A2BApp {
       cartSubtotal: document.getElementById('cart-subtotal'),
       cartSavings: document.getElementById('cart-savings'),
       cartTotal: document.getElementById('cart-total'),
+      themeToggleBtn: document.getElementById('theme-toggle-btn'),
       wishlistBtn: document.getElementById('wishlist-btn'),
       wishlistCount: document.getElementById('wishlist-count'),
       
@@ -320,6 +321,18 @@ class A2BApp {
     this.updateCartBadge();
     this.updateWishlistBadge();
     this.updatePincodeDisplay();
+    this.loadTheme();
+  }
+
+  loadTheme() {
+    const isBW = localStorage.getItem('theme-bw') === 'true';
+    if (isBW) {
+      document.body.classList.add('theme-bw');
+      const icon = this.dom.themeToggleBtn.querySelector('i');
+      const text = this.dom.themeToggleBtn.querySelector('.desktop-only');
+      if (text) text.textContent = 'Color Mode';
+      if (icon) icon.className = 'fa-solid fa-palette';
+    }
   }
 
   setupEventListeners() {
@@ -378,6 +391,23 @@ class A2BApp {
       this.closeCartDrawer();
       this.closeMobileFilterDrawer();
       this.closeMobileSortBottomSheet();
+    });
+
+    // Theme Toggle (B&W Mode)
+    this.dom.themeToggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('theme-bw');
+      const isBW = document.body.classList.contains('theme-bw');
+      localStorage.setItem('theme-bw', isBW ? 'true' : 'false');
+      
+      const icon = this.dom.themeToggleBtn.querySelector('i');
+      const text = this.dom.themeToggleBtn.querySelector('.desktop-only');
+      if (isBW) {
+        if (text) text.textContent = 'Color Mode';
+        if (icon) icon.className = 'fa-solid fa-palette';
+      } else {
+        if (text) text.textContent = 'B&W Mode';
+        if (icon) icon.className = 'fa-solid fa-circle-half-stroke';
+      }
     });
 
     // Wishlist view trigger (filter by wishlist)
