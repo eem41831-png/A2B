@@ -205,6 +205,7 @@ class A2BApp {
       detailView: document.getElementById('detail-view'),
       productGrid: document.getElementById('product-grid'),
       productCount: document.getElementById('product-count'),
+      mobileProductCount: document.getElementById('mobile-product-count'),
       priceSlider: document.getElementById('price-range-slider'),
       priceSliderVal: document.getElementById('price-slider-value'),
       brandFilters: document.getElementById('brand-filters'),
@@ -214,7 +215,7 @@ class A2BApp {
       sortTabs: document.getElementById('sort-tabs'),
       clearFilters: document.getElementById('clear-filters-btn'),
       
-      // Detail DOM
+      // Detail DOM (Desktop)
       breadcrumbBrand: document.getElementById('breadcrumb-brand'),
       breadcrumbModel: document.getElementById('breadcrumb-model'),
       detailMainImg: document.getElementById('detail-main-img'),
@@ -224,6 +225,15 @@ class A2BApp {
       detailRatingBadge: document.getElementById('detail-rating-badge'),
       detailReviewCount: document.getElementById('detail-review-count'),
       detailConditionBadge: document.getElementById('detail-condition-badge'),
+      
+      // Detail DOM (Mobile-only)
+      mobileDetailBrand: document.getElementById('mobile-detail-brand'),
+      mobileDetailTitle: document.getElementById('mobile-detail-title'),
+      mobileDetailRatingBadge: document.getElementById('mobile-detail-rating-badge'),
+      mobileDetailReviewCount: document.getElementById('mobile-detail-review-count'),
+      mobileDetailConditionBadge: document.getElementById('mobile-detail-condition-badge'),
+      
+      // Detail Price & Specs
       detailPrice: document.getElementById('detail-price'),
       detailOrigPrice: document.getElementById('detail-orig-price'),
       detailDiscount: document.getElementById('detail-discount'),
@@ -264,7 +274,16 @@ class A2BApp {
       // Search
       searchInput: document.getElementById('search-input'),
       searchSuggestions: document.getElementById('search-suggestions'),
-      logoLink: document.getElementById('logo-link')
+      logoLink: document.getElementById('logo-link'),
+
+      // Mobile Redesign UI elements
+      filterSidebar: document.getElementById('filter-sidebar'),
+      filterSidebarClose: document.getElementById('filter-sidebar-close'),
+      applyFiltersBtn: document.getElementById('apply-filters-btn'),
+      mobileSortTrigger: document.getElementById('mobile-sort-trigger'),
+      mobileFilterTrigger: document.getElementById('mobile-filter-trigger'),
+      sortBottomSheet: document.getElementById('sort-bottom-sheet'),
+      sortSheetClose: document.getElementById('sort-sheet-close')
     };
 
     this.init();
@@ -293,7 +312,7 @@ class A2BApp {
     this.setupEventListeners();
     this.setupCarousel();
     this.buildFilterOptions();
-    this.renderProductGrid();
+    this.showCatalogView(); // Correctly sets classes on start
     this.updateCartBadge();
     this.updateWishlistBadge();
     this.updatePincodeDisplay();
@@ -306,7 +325,7 @@ class A2BApp {
       this.showCatalogView();
     });
 
-    // Pincode indicator click (focus check input in details if open)
+    // Pincode indicator click
     this.dom.headerPincodeBtn.addEventListener('click', () => {
       const pin = prompt("Enter a 6-digit delivery Zip Code/Pincode:", this.currentLocationPincode || "");
       if (pin !== null) {
@@ -329,7 +348,7 @@ class A2BApp {
       this.renderProductGrid();
     });
 
-    // Sort tabs
+    // Sort tabs (Desktop)
     this.dom.sortTabs.addEventListener('click', (e) => {
       const tab = e.target.closest('.sort-tab');
       if (!tab) return;
@@ -337,6 +356,7 @@ class A2BApp {
       this.dom.sortTabs.querySelectorAll('.sort-tab').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       this.currentSort = tab.dataset.sort;
+      this.syncSortUI(this.currentSort);
       this.renderProductGrid();
     });
 
@@ -348,8 +368,12 @@ class A2BApp {
     // Cart Drawer Toggle
     this.dom.cartBtn.addEventListener('click', () => this.openCartDrawer());
     this.dom.cartDrawerClose.addEventListener('click', () => this.closeCartDrawer());
+    
+    // Backdrop click handles all overlays (Cart Drawer, Filter Drawer, Bottom Sheet)
     this.dom.backdrop.addEventListener('click', () => {
       this.closeCartDrawer();
+      this.closeMobileFilterDrawer();
+      this.closeMobileSortBottomSheet();
     });
 
     // Wishlist view trigger (filter by wishlist)
@@ -420,15 +444,90 @@ class A2BApp {
 
     // Submit review click
     document.getElementById('submit-review-btn').addEventListener('click', () => this.handleReviewSubmit());
+
+    // MOBILEA2B SPECIFIC INTERACTIVE LISTENERS
+    
+    // Sort Bottom-sheet trigger open
+    this.dom.mobileSortTrigger.addEventListener('click', () => this.openMobileSortBottomSheet());
+    this.dom.sortSheetClose.addEventListener('click', () => this.closeMobileSortBottomSheet());
+
+    // Mobile Radio options change
+    document.getElementsByName('mobile-sort').forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        this.currentSort = e.target.value;
+        this.syncSortUI(this.currentSort);
+        this.renderProductGrid();
+        setTimeout(() => this.closeMobileSortBottomSheet(), 200); // smooth closure
+      });
+    });
+
+    // Filter Drawer trigger open
+    this.dom.mobileFilterTrigger.addEventListener('click', () => this.openMobileFilterDrawer());
+    this.dom.filterSidebarClose.addEventListener('click', () => this.closeMobileFilterDrawer());
+    this.dom.applyFiltersBtn.addEventListener('click', () => this.closeMobileFilterDrawer());
+  }
+
+  /* Mobile Sort Sheet Controllers */
+  openMobileSortBottomSheet() {
+    this.dom.backdrop.style.display = 'block';
+    setTimeout(() => {
+      this.dom.backdrop.style.opacity = '1';
+      this.dom.sortBottomSheet.classList.add('open');
+    }, 10);
+  }
+
+  closeMobileSortBottomSheet() {
+    this.dom.sortBottomSheet.classList.remove('open');
+    this.dom.backdrop.style.opacity = '0';
+    setTimeout(() => {
+      this.dom.backdrop.style.display = 'none';
+    }, 300);
+  }
+
+  /* Mobile Filter Drawer Controllers */
+  openMobileFilterDrawer() {
+    this.dom.backdrop.style.display = 'block';
+    setTimeout(() => {
+      this.dom.backdrop.style.opacity = '1';
+      this.dom.filterSidebar.classList.add('open');
+    }, 10);
+  }
+
+  closeMobileFilterDrawer() {
+    this.dom.filterSidebar.classList.remove('open');
+    this.dom.backdrop.style.opacity = '0';
+    setTimeout(() => {
+      this.dom.backdrop.style.display = 'none';
+    }, 300);
+  }
+
+  // Sync sorting checkboxes on desktop and radio options on mobile
+  syncSortUI(sortValue) {
+    // Desktop tabs
+    this.dom.sortTabs.querySelectorAll('.sort-tab').forEach(tab => {
+      if (tab.dataset.sort === sortValue) tab.classList.add('active');
+      else tab.classList.remove('active');
+    });
+
+    // Mobile radios
+    const radios = document.getElementsByName('mobile-sort');
+    radios.forEach(r => {
+      r.checked = (r.value === sortValue);
+    });
   }
 
   /* Single Page Router transitions */
   showCatalogView() {
     this.dom.detailView.classList.remove('active');
     this.dom.catalogView.classList.add('active');
+    
+    // Set body classes for mobile layout spacing
+    document.body.className = 'catalog-active-mobile';
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
     this.activeProduct = null;
     this.renderProductGrid();
+    this.updateCompareBar(); // Keeps comparison alignment intact
   }
 
   showProductDetails(productId) {
@@ -436,15 +535,34 @@ class A2BApp {
     if (!product) return;
     this.activeProduct = product;
     
+    // Set body classes for mobile layout spacing (e.g. docked buy buttons)
+    document.body.className = 'details-active-mobile';
+
     // Set breadcrumbs & titles
     this.dom.breadcrumbBrand.textContent = product.brand;
     this.dom.breadcrumbModel.textContent = product.model;
+    
+    // Desktop View text nodes
     this.dom.detailBrand.textContent = product.brand;
     this.dom.detailTitle.textContent = product.title;
-
-    // Condition badge
     this.dom.detailConditionBadge.className = `detail-condition-badge ${product.condition}`;
     this.dom.detailConditionBadge.textContent = product.conditionText;
+    
+    // Mobile View text nodes
+    this.dom.mobileDetailBrand.textContent = product.brand;
+    this.dom.mobileDetailTitle.textContent = product.title;
+    this.dom.mobileDetailConditionBadge.className = `detail-condition-badge ${product.condition}`;
+    this.dom.mobileDetailConditionBadge.textContent = product.conditionText;
+
+    // Rating badges
+    this.dom.detailRatingBadge.querySelector('span').textContent = product.rating.toFixed(1);
+    this.dom.mobileDetailRatingBadge.querySelector('span').textContent = product.rating.toFixed(1);
+    
+    // Rating reviews counters
+    const countStr = `${product.reviewCount} Ratings & ${product.reviews.length} Reviews`;
+    const countStrMobile = `(${product.reviewCount})`;
+    this.dom.detailReviewCount.textContent = countStr;
+    this.dom.mobileDetailReviewCount.textContent = countStrMobile;
 
     // Prices
     this.dom.detailPrice.textContent = `$${product.price}`;
@@ -532,13 +650,12 @@ class A2BApp {
     this.dom.catalogView.classList.remove('active');
     this.dom.detailView.classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.updateCompareBar(); // Closes catalog actions and aligns compare bar spacing
   }
 
   // Reviews renderer
   renderReviewsTab(product) {
-    this.dom.detailReviewCount.textContent = `${product.reviewCount} Ratings & ${product.reviews.length} Reviews`;
-    
-    // Agg ratings box
+    // Reset review counter titles inside aggregate box
     document.getElementById('reviews-agg-rating').textContent = product.rating.toFixed(1);
     
     // Agg rating Stars
@@ -557,12 +674,10 @@ class A2BApp {
     }
     document.getElementById('reviews-agg-count').textContent = `${product.reviewCount} Ratings`;
 
-    // Mock star distributions (e.g. 5 star 70%, 4 star 20%, etc.)
+    // Mock star distributions
     const distroBox = document.getElementById('reviews-distribution');
     distroBox.innerHTML = '';
     
-    // Calculate simulated breakdown based on average rating
-    // Higher average rating -> more 5/4 stars
     const distroMap = {
       5: Math.round(product.rating >= 4.5 ? 70 : 40),
       4: Math.round(product.rating >= 4.5 ? 20 : 35),
@@ -651,18 +766,16 @@ class A2BApp {
     // Recalculate rating
     const totalReviews = this.activeProduct.reviews.length;
     const sumRatings = this.activeProduct.reviews.reduce((acc, curr) => acc + curr.rating, 0);
-    // Adjust mock count
     this.activeProduct.reviewCount += 1;
     this.activeProduct.rating = sumRatings / totalReviews;
 
     // Re-render
     this.renderReviewsTab(this.activeProduct);
-    alert("Thank you! Your mock review has been successfully submitted and verified.");
+    alert("Thank you! Your mock review has been successfully submitted.");
   }
 
   /* Pincode & Delivery Validation */
   verifyAndSetPincode(pinCode, triggerAlert = false) {
-    // Basic zip code expression
     const validZip = /^\d{6}$/.test(pinCode) || /^\d{5}$/.test(pinCode);
     if (!validZip) {
       if (triggerAlert) alert("Please enter a valid 5-digit (US) or 6-digit (IN) numeric zip code!");
@@ -676,10 +789,6 @@ class A2BApp {
     this.saveState('a2b_pincode', pinCode);
     this.updatePincodeDisplay();
 
-    // Check pincode logic
-    // We mock delivery dates dynamically:
-    // If the zip ends in an even digit -> Next day express delivery
-    // If it ends in an odd digit -> Standard 2-3 days delivery
     const lastDigit = parseInt(pinCode.slice(-1));
     const isEven = lastDigit % 2 === 0;
 
@@ -701,7 +810,7 @@ class A2BApp {
     this.dom.pincodeFeedback.style.display = 'flex';
 
     if (triggerAlert) {
-      alert(`Location updated successfully to ${pinCode}. Standard delivery times applied!`);
+      alert(`Location updated successfully to ${pinCode}.`);
     }
   }
 
@@ -721,7 +830,6 @@ class A2BApp {
       return;
     }
 
-    // Filter laptops matching brand, model, processor or graphics
     const matches = this.laptops.filter(l => 
       l.title.toLowerCase().includes(q) || 
       l.brand.toLowerCase().includes(q) ||
@@ -758,7 +866,6 @@ class A2BApp {
 
   /* Custom Sidebar filter builder */
   buildFilterOptions() {
-    // Extract unique brands, conditions, RAM sizes, and Processors
     const brands = [...new Set(this.laptops.map(l => l.brand))];
     const conditions = [
       { key: "like-new", label: "Like New (9.5+)" },
@@ -766,7 +873,6 @@ class A2BApp {
       { key: "good", label: "Good (8.0+)" },
       { key: "fair", label: "Fair (Under 8.0)" }
     ];
-    // RAM and processors extracted from specs or hardcoded for cleanliness
     const rams = ["8GB", "16GB", "32GB"];
     const processors = ["Apple", "Intel Core i7", "Intel Core i9", "AMD Ryzen 5", "AMD Ryzen 9"];
 
@@ -884,14 +990,16 @@ class A2BApp {
     } else if (this.currentSort === 'rating') {
       filtered.sort((a, b) => b.rating - a.rating);
     } else {
-      // popular sort defaults to ID order or review count
       filtered.sort((a, b) => b.reviewCount - a.reviewCount);
     }
 
-    // Update Counter
-    this.dom.productCount.textContent = wishlistOnly 
+    // Update Counters (Desktop and Mobile nodes)
+    const countText = wishlistOnly 
       ? `Showing ${filtered.length} Wishlist Laptops`
       : `Showing ${filtered.length} of ${this.laptops.length} Certified Laptops`;
+
+    this.dom.productCount.textContent = countText;
+    this.dom.mobileProductCount.textContent = countText;
 
     if (filtered.length === 0) {
       this.dom.productGrid.innerHTML = `
@@ -941,7 +1049,7 @@ class A2BApp {
             <span class="rating-count">(${laptop.reviewCount})</span>
           </div>
 
-          <!-- Specs snippet -->
+          <!-- Specs snippet (Desktop-only) -->
           <div class="card-highlights">
             <div class="highlight-item"><i class="fa-solid fa-cpu highlight-icon"></i> <span>${laptop.specs.Processor.split(' (')[0]}</span></div>
             <div class="highlight-item"><i class="fa-solid fa-microchip highlight-icon"></i> <span>${laptop.specs.Memory}</span></div>
@@ -1063,7 +1171,6 @@ class A2BApp {
           <span>Your cart is empty! Let's find your dream pre-loved laptop.</span>
         </div>
       `;
-      // Reset prices
       this.dom.cartSubtotal.textContent = "$0";
       this.dom.cartSavings.textContent = "$0";
       this.dom.cartTotal.textContent = "$0";
@@ -1107,7 +1214,6 @@ class A2BApp {
 
     this.dom.cartDrawerBody.appendChild(list);
 
-    // Calc totals
     const finalAmount = subTotal - savings;
     this.dom.cartSubtotal.textContent = `$${subTotal}`;
     this.dom.cartSavings.textContent = `-$${savings}`;
@@ -1119,7 +1225,6 @@ class A2BApp {
     if (isChecked) {
       if (this.compareList.length >= 3) {
         alert("You can compare up to 3 laptops at a time!");
-        // Re-render to uncheck the checkbox
         this.renderProductGrid();
         return;
       }
@@ -1154,13 +1259,15 @@ class A2BApp {
     });
 
     this.dom.compareItemsCount.textContent = `${this.compareList.length} item(s) selected`;
+    
+    // Check view state to ensure compare bar shifts above mobile navigation buttons if catalog is active
     this.dom.compareBar.classList.add('active');
   }
 
   removeCompareItem(productId) {
     this.compareList = this.compareList.filter(id => id !== productId);
     this.updateCompareBar();
-    this.renderProductGrid(); // Ensure card checkbox state updates
+    this.renderProductGrid();
   }
 
   openCompareModal() {
@@ -1182,7 +1289,6 @@ class A2BApp {
 
     const products = this.compareList.map(id => this.laptops.find(l => l.id === id));
     
-    // 1. Render Header Row (Names and images)
     const headerRow = document.createElement('tr');
     headerRow.innerHTML = `<th class="compare-col-header">Laptop Specifications</th>`;
     products.forEach(p => {
@@ -1201,7 +1307,6 @@ class A2BApp {
     });
     this.dom.comparisonTable.appendChild(headerRow);
 
-    // Spec columns comparison list
     const compareKeys = [
       { section: "General Refurbishment Info", keys: ["Cosmetic Details", "A2B Warranty", "Accessories Included"] },
       { section: "Hardware Configurations", keys: ["Processor", "Memory", "Storage", "Display", "GPU / Graphics"] },
@@ -1209,12 +1314,10 @@ class A2BApp {
     ];
 
     compareKeys.forEach(grp => {
-      // Add section row
       const secRow = document.createElement('tr');
       secRow.innerHTML = `<td class="spec-section-header" colspan="${products.length + 1}">${grp.section}</td>`;
       this.dom.comparisonTable.appendChild(secRow);
 
-      // Add specifications rows
       grp.keys.forEach(key => {
         const row = document.createElement('tr');
         row.innerHTML = `<td class="specs-name" style="font-weight:600">${key}</td>`;
@@ -1285,11 +1388,25 @@ class A2BApp {
       this.carouselInterval = setInterval(nextSlide, 7000);
     });
   }
+
+  // Filter shortcut for footer links
+  filterByBrand(brandName) {
+    this.clearAllFilters();
+    this.filters.brands.push(brandName);
+    
+    // Check matching brand checkboxes in sidebar
+    const checkboxes = document.querySelectorAll('#brand-filters input[type="checkbox"]');
+    checkboxes.forEach(cb => {
+      if (cb.value === brandName) cb.checked = true;
+    });
+
+    this.showCatalogView();
+  }
 }
 
 // Instantiate App
 let app;
 document.addEventListener('DOMContentLoaded', () => {
   app = new A2BApp();
-  window.app = app; // Expose globally for HTML onclick inline callbacks
+  window.app = app;
 });

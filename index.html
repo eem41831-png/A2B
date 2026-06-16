@@ -13,47 +13,50 @@
 </head>
 <body>
 
-  <!-- Drawer Backdrop -->
+  <!-- Drawer / Bottom Sheet Backdrop -->
   <div id="drawer-backdrop" class="drawer-backdrop"></div>
 
   <!-- Header -->
   <header>
     <div class="container header-container">
-      <!-- Logo -->
-      <a href="#" class="logo" id="logo-link">
-        <div class="logo-icon bg-gradient">A2B</div>
-        <span class="logo-text text-gradient">A2B Laptops</span>
-      </a>
+      
+      <!-- Mobile Top Row Layout Helper -->
+      <div class="header-top-row">
+        <!-- Logo -->
+        <a href="#" class="logo" id="logo-link">
+          <div class="logo-icon bg-gradient">A2B</div>
+          <span class="logo-text text-gradient">A2B Laptops</span>
+        </a>
 
-      <!-- Pincode Display Indicator -->
-      <div class="pincode-btn" id="header-pincode-btn">
-        <i class="fa-solid fa-location-dot"></i>
-        <span id="pincode-display">Select Location</span>
+        <!-- Pincode Display Indicator (Desktop/Mobile wrapper) -->
+        <div class="pincode-btn" id="header-pincode-btn">
+          <i class="fa-solid fa-location-dot"></i>
+          <span id="pincode-display">Select Location</span>
+        </div>
+
+        <!-- Navigation Actions (Wishlist & Cart) -->
+        <div class="nav-actions">
+          <button class="nav-btn" id="wishlist-btn" title="View Wishlist">
+            <i class="fa-regular fa-heart"></i>
+            <span class="desktop-only">Wishlist</span>
+            <span class="nav-badge" id="wishlist-count" style="display: none;">0</span>
+          </button>
+
+          <button class="nav-btn" id="cart-btn" title="View Cart">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span class="desktop-only">Cart</span>
+            <span class="nav-badge" id="cart-count" style="display: none;">0</span>
+          </button>
+        </div>
       </div>
 
-      <!-- Search Bar -->
+      <!-- Search Bar (Gets 100% width on Mobile) -->
       <div class="search-wrapper">
         <i class="fa-solid fa-magnifying-glass search-icon"></i>
         <input type="text" id="search-input" class="search-bar" placeholder="Search brands, processors, specs (e.g. MacBook, i7)...">
         <div id="search-suggestions" class="search-suggestions"></div>
       </div>
 
-      <!-- Navigation Actions -->
-      <div class="nav-actions">
-        <!-- Wishlist -->
-        <button class="nav-btn" id="wishlist-btn" title="View Wishlist">
-          <i class="fa-regular fa-heart"></i>
-          <span>Wishlist</span>
-          <span class="nav-badge" id="wishlist-count" style="display: none;">0</span>
-        </button>
-
-        <!-- Cart Trigger -->
-        <button class="nav-btn" id="cart-btn" title="View Cart">
-          <i class="fa-solid fa-cart-shopping"></i>
-          <span>Cart</span>
-          <span class="nav-badge" id="cart-count" style="display: none;">0</span>
-        </button>
-      </div>
     </div>
   </header>
 
@@ -105,11 +108,12 @@
 
       <!-- Catalog Layout Grid -->
       <div class="catalog-layout">
-        <!-- Left Sidebar: Filters -->
-        <aside class="filter-sidebar">
+        <!-- Left Sidebar: Filters (Drawer on Mobile) -->
+        <aside class="filter-sidebar" id="filter-sidebar">
           <div class="filter-header">
             <span class="filter-title">Filters</span>
             <span class="clear-all" id="clear-filters-btn">Clear All</span>
+            <button class="drawer-close mobile-only" id="filter-sidebar-close">&times;</button>
           </div>
 
           <!-- Price Slider -->
@@ -155,12 +159,17 @@
               <!-- Dynamically Populated -->
             </div>
           </div>
+
+          <!-- Apply Filter button on Mobile view -->
+          <div class="filter-sidebar-footer mobile-only">
+            <button class="btn btn-primary" style="width: 100%; padding: 0.75rem;" id="apply-filters-btn">Apply Filters</button>
+          </div>
         </aside>
 
         <!-- Right Side: Product Catalog Grid -->
         <div class="catalog-content">
-          <!-- Sort & Counter Bar -->
-          <div class="catalog-info-bar">
+          <!-- Sort & Counter Bar (Desktop Only - mobile gets sticky bottom bar) -->
+          <div class="catalog-info-bar desktop-only">
             <span class="product-count" id="product-count">Showing 6 Laptops</span>
             
             <div class="sort-wrapper">
@@ -174,7 +183,12 @@
             </div>
           </div>
 
-          <!-- Product Grid -->
+          <!-- Mobile-only Info Counter -->
+          <div class="mobile-only mobile-product-counter">
+            <span id="mobile-product-count">Showing 6 Certified Laptops</span>
+          </div>
+
+          <!-- Product Grid (adaptive 2-col on mobile) -->
           <div class="product-grid" id="product-grid">
             <!-- Dynamically populated product cards -->
           </div>
@@ -195,6 +209,20 @@
         <span id="breadcrumb-model" style="color: var(--text-primary);">Model</span>
       </nav>
 
+      <!-- Mobile-only Product Title (Placed at top on phones, hidden on desktop) -->
+      <div class="mobile-title-block mobile-only">
+        <span class="brand-title" id="mobile-detail-brand">Brand Name</span>
+        <h1 class="detail-title" id="mobile-detail-title">Laptop Model Name</h1>
+        
+        <div class="detail-ratings-row" style="margin-top: 0.5rem; margin-bottom: 0.75rem;">
+          <div class="rating-badge" id="mobile-detail-rating-badge">
+            <span>0.0</span> <i class="fa-solid fa-star"></i>
+          </div>
+          <span class="rating-count" id="mobile-detail-review-count">0 Reviews</span>
+          <div class="detail-condition-badge" id="mobile-detail-condition-badge">Like New</div>
+        </div>
+      </div>
+
       <!-- Grid Layout for Detail View -->
       <div class="detail-container">
         
@@ -213,8 +241,8 @@
             <!-- Thumbnails inserted here -->
           </div>
 
-          <!-- Sticky / Action Buttons -->
-          <div class="action-buttons-row">
+          <!-- Action Buttons (Sticky/Floating on Mobile, styled in CSS) -->
+          <div class="action-buttons-row" id="detail-actions-bar">
             <button class="btn btn-secondary" id="detail-add-to-cart-btn">
               <i class="fa-solid fa-cart-shopping"></i> Add to Cart
             </button>
@@ -226,19 +254,17 @@
 
         <!-- Right Column: Product Detail & Reviews Info -->
         <div class="detail-info-panel">
-          <div>
+          <!-- Desktop Title block (hidden on mobile) -->
+          <div class="desktop-only">
             <span class="brand-title" id="detail-brand">Brand Name</span>
             <h1 class="detail-title" id="detail-title">Laptop Model Full Name</h1>
-          </div>
-
-          <!-- Ratings Summary & Condition badge -->
-          <div class="detail-ratings-row">
-            <div class="rating-badge" id="detail-rating-badge">
-              <span>0.0</span> <i class="fa-solid fa-star"></i>
-            </div>
-            <span class="rating-count" id="detail-review-count">0 Ratings & 0 Reviews</span>
-            <div class="detail-condition-badge" id="detail-condition-badge">
-              Like New
+            
+            <div class="detail-ratings-row" style="margin-top: 0.5rem;">
+              <div class="rating-badge" id="detail-rating-badge">
+                <span>0.0</span> <i class="fa-solid fa-star"></i>
+              </div>
+              <span class="rating-count" id="detail-review-count">0 Ratings & 0 Reviews</span>
+              <div class="detail-condition-badge" id="detail-condition-badge">Like New</div>
             </div>
           </div>
 
@@ -252,7 +278,7 @@
             <div class="detail-saving-msg" id="detail-savings">You Save $0 on retail price!</div>
           </div>
 
-          <!-- Pin-code Availability Checker (inspired by flipkart check delivery) -->
+          <!-- Pin-code Availability Checker -->
           <div class="pincode-checker">
             <span class="pincode-label"><i class="fa-solid fa-truck"></i> Check Delivery Availability</span>
             <div class="pincode-input-row">
@@ -359,6 +385,47 @@
     </section>
 
   </main>
+
+  <!-- Mobile-only Catalog Actions: Sticky Bottom Bar (Sort / Filter) -->
+  <div id="mobile-catalog-actions" class="mobile-catalog-sticky-bar mobile-only">
+    <button class="mobile-action-btn" id="mobile-sort-trigger">
+      <i class="fa-solid fa-arrow-down-wide-short"></i> Sort
+    </button>
+    <div class="mobile-action-divider"></div>
+    <button class="mobile-action-btn" id="mobile-filter-trigger">
+      <i class="fa-solid fa-filter"></i> Filter
+    </button>
+  </div>
+
+  <!-- Mobile Sort Bottom Sheet -->
+  <div id="sort-bottom-sheet" class="bottom-sheet">
+    <div class="bottom-sheet-header">
+      <span class="bottom-sheet-title">Sort By</span>
+      <button class="bottom-sheet-close" id="sort-sheet-close">&times;</button>
+    </div>
+    <div class="bottom-sheet-body">
+      <label class="bottom-sheet-radio-label">
+        <input type="radio" name="mobile-sort" value="popular" checked>
+        <span class="radio-custom"></span>
+        <span>Popularity (Reviews)</span>
+      </label>
+      <label class="bottom-sheet-radio-label">
+        <input type="radio" name="mobile-sort" value="price-asc">
+        <span class="radio-custom"></span>
+        <span>Price: Low to High</span>
+      </label>
+      <label class="bottom-sheet-radio-label">
+        <input type="radio" name="mobile-sort" value="price-desc">
+        <span class="radio-custom"></span>
+        <span>Price: High to Low</span>
+      </label>
+      <label class="bottom-sheet-radio-label">
+        <input type="radio" name="mobile-sort" value="rating">
+        <span class="radio-custom"></span>
+        <span>Customer Ratings</span>
+      </label>
+    </div>
+  </div>
 
   <!-- Sticky Bottom Comparison Bar -->
   <div id="compare-bar" class="compare-sticky-bar">
