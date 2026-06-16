@@ -8,8 +8,8 @@ const LAPTOP_DATA = [
     brand: "Apple",
     model: "MacBook Pro 14\"",
     title: "Apple MacBook Pro 14\" (M2 Pro, 16GB RAM, 512GB SSD) - Space Gray",
-    price: 1499,
-    originalPrice: 1999,
+    price: 129999,
+    originalPrice: 169999,
     rating: 4.8,
     reviewCount: 28,
     condition: "like-new",
@@ -28,7 +28,7 @@ const LAPTOP_DATA = [
     },
     reviews: [
       { author: "Sidarth S.", date: "2026-05-12", rating: 5, title: "Absolutely brand new condition", comment: "I was skeptical about buying a refurbished laptop, but this is literally brand new. No scratches, battery health at 96% as promised. Best purchase!" },
-      { author: "Priyah K.", date: "2026-04-20", rating: 5, title: "Insane Value", comment: "Super fast shipping. Saved $500 compared to a retail Apple Store. M2 Pro chip compiles all my code in seconds." },
+      { author: "Priyah K.", date: "2026-04-20", rating: 5, title: "Insane Value", comment: "Super fast shipping. Saved ₹40,000 compared to a retail Apple Store. M2 Pro chip compiles all my code in seconds." },
       { author: "Michael B.", date: "2026-03-15", rating: 4, title: "Great laptop, original box missing", comment: "Product works perfectly, looks flawless. Just note it comes in A2B premium cardboard box, not the original Apple packaging. Accessories are original." }
     ]
   },
@@ -37,8 +37,8 @@ const LAPTOP_DATA = [
     brand: "Dell",
     model: "XPS 15 9530",
     title: "Dell XPS 15 9530 (Intel i9, 32GB RAM, 1TB SSD, RTX 4060) - Silver",
-    price: 1299,
-    originalPrice: 1899,
+    price: 114999,
+    originalPrice: 159999,
     rating: 4.7,
     reviewCount: 19,
     condition: "excellent",
@@ -66,8 +66,8 @@ const LAPTOP_DATA = [
     brand: "Lenovo",
     model: "ThinkPad X1 Carbon Gen 10",
     title: "Lenovo ThinkPad X1 Carbon Gen 10 (Intel i7, 16GB RAM, 512GB SSD) - Black",
-    price: 799,
-    originalPrice: 1499,
+    price: 64999,
+    originalPrice: 119999,
     rating: 4.6,
     reviewCount: 32,
     condition: "good",
@@ -94,8 +94,8 @@ const LAPTOP_DATA = [
     brand: "ASUS",
     model: "ROG Zephyrus G14",
     title: "ASUS ROG Zephyrus G14 (AMD Ryzen 9, 16GB RAM, 1TB SSD, RTX 3060) - Moonlight White",
-    price: 949,
-    originalPrice: 1399,
+    price: 79999,
+    originalPrice: 109999,
     rating: 4.5,
     reviewCount: 24,
     condition: "excellent",
@@ -123,8 +123,8 @@ const LAPTOP_DATA = [
     brand: "HP",
     model: "Spectre x360",
     title: "HP Spectre x360 2-in-1 Touch (Intel i7, 16GB RAM, 512GB SSD) - Nightfall Black",
-    price: 849,
-    originalPrice: 1299,
+    price: 69999,
+    originalPrice: 104999,
     rating: 4.4,
     reviewCount: 15,
     condition: "like-new",
@@ -151,8 +151,8 @@ const LAPTOP_DATA = [
     brand: "Acer",
     model: "Swift Go 14",
     title: "Acer Swift Go 14 (AMD Ryzen 5, 8GB RAM, 512GB SSD) - Pure Silver",
-    price: 399,
-    originalPrice: 649,
+    price: 32999,
+    originalPrice: 52999,
     rating: 4.1,
     reviewCount: 42,
     condition: "fair",
@@ -180,13 +180,13 @@ class A2BApp {
   constructor() {
     this.laptops = [...LAPTOP_DATA];
     
-    // State Management
+    // State Management (rupee config limits)
     this.filters = {
       brands: [],
       conditions: [],
       rams: [],
       processors: [],
-      maxPrice: 1600
+      maxPrice: 150000
     };
     this.currentSort = 'popular';
     
@@ -283,7 +283,11 @@ class A2BApp {
       mobileSortTrigger: document.getElementById('mobile-sort-trigger'),
       mobileFilterTrigger: document.getElementById('mobile-filter-trigger'),
       sortBottomSheet: document.getElementById('sort-bottom-sheet'),
-      sortSheetClose: document.getElementById('sort-sheet-close')
+      sortSheetClose: document.getElementById('sort-sheet-close'),
+
+      // Mobile additional triggers (Rupee upgrade request)
+      mobileHeaderFilterTrigger: document.getElementById('mobile-header-filter-trigger'),
+      mobileGridFilterTrigger: document.getElementById('mobile-grid-filter-trigger')
     };
 
     this.init();
@@ -312,7 +316,7 @@ class A2BApp {
     this.setupEventListeners();
     this.setupCarousel();
     this.buildFilterOptions();
-    this.showCatalogView(); // Correctly sets classes on start
+    this.showCatalogView(); 
     this.updateCartBadge();
     this.updateWishlistBadge();
     this.updatePincodeDisplay();
@@ -341,10 +345,10 @@ class A2BApp {
       }
     });
 
-    // Price Slider
+    // Price Slider (Rupee max logic)
     this.dom.priceSlider.addEventListener('input', (e) => {
       this.filters.maxPrice = parseInt(e.target.value);
-      this.dom.priceSliderVal.textContent = `Max: $${this.filters.maxPrice}`;
+      this.dom.priceSliderVal.textContent = `Max: ₹${this.filters.maxPrice.toLocaleString('en-IN')}`;
       this.renderProductGrid();
     });
 
@@ -383,7 +387,6 @@ class A2BApp {
         return;
       }
       this.showCatalogView();
-      // Temporarily override grid render to show only wishlist items
       this.renderProductGrid(true);
     });
 
@@ -457,12 +460,15 @@ class A2BApp {
         this.currentSort = e.target.value;
         this.syncSortUI(this.currentSort);
         this.renderProductGrid();
-        setTimeout(() => this.closeMobileSortBottomSheet(), 200); // smooth closure
+        setTimeout(() => this.closeMobileSortBottomSheet(), 200); 
       });
     });
 
-    // Filter Drawer trigger open
+    // Filter Drawer triggers
     this.dom.mobileFilterTrigger.addEventListener('click', () => this.openMobileFilterDrawer());
+    this.dom.mobileHeaderFilterTrigger.addEventListener('click', () => this.openMobileFilterDrawer());
+    this.dom.mobileGridFilterTrigger.addEventListener('click', () => this.openMobileFilterDrawer());
+    
     this.dom.filterSidebarClose.addEventListener('click', () => this.closeMobileFilterDrawer());
     this.dom.applyFiltersBtn.addEventListener('click', () => this.closeMobileFilterDrawer());
   }
@@ -503,13 +509,11 @@ class A2BApp {
 
   // Sync sorting checkboxes on desktop and radio options on mobile
   syncSortUI(sortValue) {
-    // Desktop tabs
     this.dom.sortTabs.querySelectorAll('.sort-tab').forEach(tab => {
       if (tab.dataset.sort === sortValue) tab.classList.add('active');
       else tab.classList.remove('active');
     });
 
-    // Mobile radios
     const radios = document.getElementsByName('mobile-sort');
     radios.forEach(r => {
       r.checked = (r.value === sortValue);
@@ -521,13 +525,12 @@ class A2BApp {
     this.dom.detailView.classList.remove('active');
     this.dom.catalogView.classList.add('active');
     
-    // Set body classes for mobile layout spacing
     document.body.className = 'catalog-active-mobile';
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
     this.activeProduct = null;
     this.renderProductGrid();
-    this.updateCompareBar(); // Keeps comparison alignment intact
+    this.updateCompareBar(); 
   }
 
   showProductDetails(productId) {
@@ -535,7 +538,6 @@ class A2BApp {
     if (!product) return;
     this.activeProduct = product;
     
-    // Set body classes for mobile layout spacing (e.g. docked buy buttons)
     document.body.className = 'details-active-mobile';
 
     // Set breadcrumbs & titles
@@ -564,18 +566,17 @@ class A2BApp {
     this.dom.detailReviewCount.textContent = countStr;
     this.dom.mobileDetailReviewCount.textContent = countStrMobile;
 
-    // Prices
-    this.dom.detailPrice.textContent = `$${product.price}`;
-    this.dom.detailOrigPrice.textContent = `$${product.originalPrice}`;
+    // Prices (Indian formatting)
+    this.dom.detailPrice.textContent = `₹${product.price.toLocaleString('en-IN')}`;
+    this.dom.detailOrigPrice.textContent = `₹${product.originalPrice.toLocaleString('en-IN')}`;
     const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
     this.dom.detailDiscount.textContent = `${discount}% OFF`;
-    this.dom.detailSavings.textContent = `You Save $${product.originalPrice - product.price} on original retail price!`;
+    this.dom.detailSavings.textContent = `You Save ₹${(product.originalPrice - product.price).toLocaleString('en-IN')} on original retail price!`;
 
     // Render detail images gallery
     this.dom.detailMainImg.src = product.image;
     this.dom.detailThumbTrack.innerHTML = '';
     
-    // Mock multiple angles (using the same main image but simulating tracks)
     const angles = ['Default View', 'Keyboard Deck', 'Side Ports', 'Lid Design'];
     angles.forEach((angle, idx) => {
       const thumb = document.createElement('div');
@@ -584,7 +585,6 @@ class A2BApp {
       thumb.addEventListener('click', () => {
         this.dom.detailThumbTrack.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
         thumb.classList.add('active');
-        // Trigger a slight hardware scaling transition on main img
         this.dom.detailMainImg.style.transform = 'scale(0.9)';
         setTimeout(() => {
           this.dom.detailMainImg.style.transform = 'scale(1)';
@@ -596,7 +596,6 @@ class A2BApp {
     // Populate spec table
     this.dom.detailSpecsTable.innerHTML = '';
     
-    // Group spec list
     const technicalGroup = {
       "General & Refurbished Details": ["Cosmetic Details", "A2B Warranty", "Accessories Included"],
       "Core Hardware Specs": ["Processor", "Memory", "Storage", "Display", "GPU / Graphics"],
@@ -604,13 +603,11 @@ class A2BApp {
     };
 
     for (const [groupName, keys] of Object.entries(technicalGroup)) {
-      // Create section header
       const headerRow = document.createElement('tr');
       headerRow.className = 'specs-section-row';
       headerRow.innerHTML = `<td colspan="2">${groupName}</td>`;
       this.dom.detailSpecsTable.appendChild(headerRow);
 
-      // Populate children
       keys.forEach(key => {
         if (product.specs[key]) {
           const row = document.createElement('tr');
@@ -633,10 +630,8 @@ class A2BApp {
       this.dom.pincodeInput.value = '';
     }
 
-    // Render reviews tab details
     this.renderReviewsTab(product);
 
-    // Active Tab Reset
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.classList.remove('active');
       if (btn.dataset.tab === 'specs-tab') btn.classList.add('active');
@@ -646,19 +641,16 @@ class A2BApp {
       if (c.id === 'specs-tab') c.classList.add('active');
     });
 
-    // Page toggle active
     this.dom.catalogView.classList.remove('active');
     this.dom.detailView.classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    this.updateCompareBar(); // Closes catalog actions and aligns compare bar spacing
+    this.updateCompareBar(); 
   }
 
   // Reviews renderer
   renderReviewsTab(product) {
-    // Reset review counter titles inside aggregate box
     document.getElementById('reviews-agg-rating').textContent = product.rating.toFixed(1);
     
-    // Agg rating Stars
     const starBox = document.getElementById('reviews-agg-stars');
     starBox.innerHTML = '';
     const fullStars = Math.floor(product.rating);
@@ -674,7 +666,6 @@ class A2BApp {
     }
     document.getElementById('reviews-agg-count').textContent = `${product.reviewCount} Ratings`;
 
-    // Mock star distributions
     const distroBox = document.getElementById('reviews-distribution');
     distroBox.innerHTML = '';
     
@@ -700,7 +691,6 @@ class A2BApp {
       distroBox.appendChild(barRow);
     }
 
-    // Render individual reviews
     const listContainer = document.getElementById('reviews-list-container');
     listContainer.innerHTML = '';
     
@@ -731,7 +721,6 @@ class A2BApp {
       });
     }
 
-    // Reset Review form star selectors
     document.querySelectorAll('.form-rating-star').forEach(s => s.classList.remove('selected'));
     document.getElementById('review-form-name').value = '';
     document.getElementById('review-form-title').value = '';
@@ -756,20 +745,16 @@ class A2BApp {
       return;
     }
 
-    // Create review object
     const today = new Date().toISOString().split('T')[0];
     const newReview = { author, date: today, rating, title, comment };
 
-    // Append to active product reviews in-memory
     this.activeProduct.reviews.unshift(newReview);
     
-    // Recalculate rating
     const totalReviews = this.activeProduct.reviews.length;
     const sumRatings = this.activeProduct.reviews.reduce((acc, curr) => acc + curr.rating, 0);
     this.activeProduct.reviewCount += 1;
     this.activeProduct.rating = sumRatings / totalReviews;
 
-    // Re-render
     this.renderReviewsTab(this.activeProduct);
     alert("Thank you! Your mock review has been successfully submitted.");
   }
@@ -850,7 +835,7 @@ class A2BApp {
         <i class="fa-solid fa-laptop text-gradient"></i>
         <div>
           <div style="font-weight:600; font-size:0.85rem">${match.brand} ${match.model}</div>
-          <div style="font-size:0.75rem; color: var(--text-muted)">${match.specs.Processor} | $${match.price}</div>
+          <div style="font-size:0.75rem; color: var(--text-muted)">${match.specs.Processor} | ₹${match.price.toLocaleString('en-IN')}</div>
         </div>
       `;
       item.addEventListener('click', () => {
@@ -938,12 +923,11 @@ class A2BApp {
       conditions: [],
       rams: [],
       processors: [],
-      maxPrice: 1600
+      maxPrice: 150000
     };
-    this.dom.priceSlider.value = 1600;
-    this.dom.priceSliderVal.textContent = "Max: $1600";
+    this.dom.priceSlider.value = 150000;
+    this.dom.priceSliderVal.textContent = "Max: ₹1,50,000";
     
-    // Uncheck all inputs
     const inputs = document.querySelectorAll('.filter-sidebar input[type="checkbox"]');
     inputs.forEach(i => i.checked = false);
 
@@ -955,25 +939,19 @@ class A2BApp {
     this.dom.productGrid.innerHTML = '';
     
     let filtered = this.laptops.filter(laptop => {
-      // Wishlist toggle filter check
       if (wishlistOnly && !this.wishlist.includes(laptop.id)) return false;
 
-      // Price check
       if (laptop.price > this.filters.maxPrice) return false;
 
-      // Brand check
       if (this.filters.brands.length > 0 && !this.filters.brands.includes(laptop.brand)) return false;
 
-      // Condition check
       if (this.filters.conditions.length > 0 && !this.filters.conditions.includes(laptop.condition)) return false;
 
-      // RAM check (includes sub-string search in Memory specs)
       if (this.filters.rams.length > 0) {
         const matchesRam = this.filters.rams.some(r => laptop.specs.Memory.includes(r));
         if (!matchesRam) return false;
       }
 
-      // Processor check
       if (this.filters.processors.length > 0) {
         const matchesProc = this.filters.processors.some(p => laptop.specs.Processor.includes(p));
         if (!matchesProc) return false;
@@ -982,7 +960,6 @@ class A2BApp {
       return true;
     });
 
-    // Sort operations
     if (this.currentSort === 'price-asc') {
       filtered.sort((a, b) => a.price - b.price);
     } else if (this.currentSort === 'price-desc') {
@@ -993,7 +970,6 @@ class A2BApp {
       filtered.sort((a, b) => b.reviewCount - a.reviewCount);
     }
 
-    // Update Counters (Desktop and Mobile nodes)
     const countText = wishlistOnly 
       ? `Showing ${filtered.length} Wishlist Laptops`
       : `Showing ${filtered.length} of ${this.laptops.length} Certified Laptops`;
@@ -1011,7 +987,6 @@ class A2BApp {
       return;
     }
 
-    // Build Product cards
     filtered.forEach(laptop => {
       const card = document.createElement('article');
       card.className = 'product-card';
@@ -1056,12 +1031,12 @@ class A2BApp {
             <div class="highlight-item"><i class="fa-solid fa-hard-drive highlight-icon"></i> <span>${laptop.specs.Storage.split(' NVMe')[0]}</span></div>
           </div>
 
-          <!-- Price & Footer actions -->
+          <!-- Price & Footer actions (Rupees formatting) -->
           <div class="card-footer">
             <div class="price-box">
-              <span class="a2b-price">$${laptop.price}</span>
+              <span class="a2b-price">₹${laptop.price.toLocaleString('en-IN')}</span>
               <div class="price-original-row">
-                <span class="original-price">$${laptop.originalPrice}</span>
+                <span class="original-price">₹${laptop.originalPrice.toLocaleString('en-IN')}</span>
                 <span class="discount-tag">${discount}% OFF</span>
               </div>
             </div>
@@ -1171,9 +1146,9 @@ class A2BApp {
           <span>Your cart is empty! Let's find your dream pre-loved laptop.</span>
         </div>
       `;
-      this.dom.cartSubtotal.textContent = "$0";
-      this.dom.cartSavings.textContent = "$0";
-      this.dom.cartTotal.textContent = "$0";
+      this.dom.cartSubtotal.textContent = "₹0";
+      this.dom.cartSavings.textContent = "₹0";
+      this.dom.cartTotal.textContent = "₹0";
       return;
     }
 
@@ -1199,7 +1174,7 @@ class A2BApp {
         <div class="cart-item-details">
           <div class="cart-item-title">${p.title}</div>
           <div class="cart-item-price-row">
-            <span class="cart-item-price">$${p.price * cartItem.quantity}</span>
+            <span class="cart-item-price">₹${(p.price * cartItem.quantity).toLocaleString('en-IN')}</span>
             <div class="quantity-controller">
               <button class="quantity-btn" onclick="app.updateCartQuantity(${p.id}, -1)">-</button>
               <span class="quantity-num">${cartItem.quantity}</span>
@@ -1215,9 +1190,9 @@ class A2BApp {
     this.dom.cartDrawerBody.appendChild(list);
 
     const finalAmount = subTotal - savings;
-    this.dom.cartSubtotal.textContent = `$${subTotal}`;
-    this.dom.cartSavings.textContent = `-$${savings}`;
-    this.dom.cartTotal.textContent = `$${finalAmount}`;
+    this.dom.cartSubtotal.textContent = `₹${subTotal.toLocaleString('en-IN')}`;
+    this.dom.cartSavings.textContent = `-₹${savings.toLocaleString('en-IN')}`;
+    this.dom.cartTotal.textContent = `₹${finalAmount.toLocaleString('en-IN')}`;
   }
 
   /* Comparison Panel System */
@@ -1259,8 +1234,6 @@ class A2BApp {
     });
 
     this.dom.compareItemsCount.textContent = `${this.compareList.length} item(s) selected`;
-    
-    // Check view state to ensure compare bar shifts above mobile navigation buttons if catalog is active
     this.dom.compareBar.classList.add('active');
   }
 
@@ -1299,7 +1272,7 @@ class A2BApp {
               <img src="${p.image}" alt="${p.model}">
             </div>
             <span class="compare-product-name">${p.brand} ${p.model}</span>
-            <span class="a2b-price" style="font-size:1.1rem">$${p.price}</span>
+            <span class="a2b-price" style="font-size:1.1rem">₹${p.price.toLocaleString('en-IN')}</span>
             <button class="btn btn-primary" style="padding: 0.35rem 0.8rem; font-size: 0.8rem;" onclick="app.closeCompareModal(); app.showProductDetails(${p.id})">View specs</button>
           </div>
         </th>
@@ -1339,7 +1312,6 @@ class A2BApp {
     
     if (!track || slides.length === 0) return;
 
-    // Create navigation dots
     dotsContainer.innerHTML = '';
     slides.forEach((_, idx) => {
       const dot = document.createElement('span');
@@ -1372,10 +1344,8 @@ class A2BApp {
       this.goToSlide(prevIdx);
     };
 
-    // Auto rotate every 7 seconds
     this.carouselInterval = setInterval(nextSlide, 7000);
 
-    // Bind arrows
     document.getElementById('carousel-next-btn').addEventListener('click', () => {
       clearInterval(this.carouselInterval);
       nextSlide();
@@ -1394,7 +1364,6 @@ class A2BApp {
     this.clearAllFilters();
     this.filters.brands.push(brandName);
     
-    // Check matching brand checkboxes in sidebar
     const checkboxes = document.querySelectorAll('#brand-filters input[type="checkbox"]');
     checkboxes.forEach(cb => {
       if (cb.value === brandName) cb.checked = true;

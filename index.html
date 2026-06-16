@@ -50,10 +50,13 @@
         </div>
       </div>
 
-      <!-- Search Bar (Gets 100% width on Mobile) -->
+      <!-- Search Bar with integrated Filter Sliders icon (Mobile-only trigger) -->
       <div class="search-wrapper">
         <i class="fa-solid fa-magnifying-glass search-icon"></i>
         <input type="text" id="search-input" class="search-bar" placeholder="Search brands, processors, specs (e.g. MacBook, i7)...">
+        <button class="mobile-search-filter-btn mobile-only" id="mobile-header-filter-trigger" title="Filter Channels">
+          <i class="fa-solid fa-sliders"></i>
+        </button>
         <div id="search-suggestions" class="search-suggestions"></div>
       </div>
 
@@ -75,7 +78,7 @@
               <span class="carousel-tag">Featured Deal</span>
               <h2 class="carousel-title">MacBook Pro 14" (M2 Pro)</h2>
               <p class="carousel-desc">Get the power of M2 Pro at a fraction of the cost. A2B Certified Refurbished with 1-Year warranty, Like New condition.</p>
-              <button class="btn btn-primary carousel-btn" onclick="app.showProductDetails(1)">Shop Deal - $1,499</button>
+              <button class="btn btn-primary carousel-btn" onclick="app.showProductDetails(1)">Shop Deal - ₹1,29,999</button>
             </div>
           </div>
           <!-- Slide 2 -->
@@ -85,7 +88,7 @@
               <span class="carousel-tag">Gaming Power</span>
               <h2 class="carousel-title">ASUS ROG Zephyrus G14</h2>
               <p class="carousel-desc">Unleash beastly performance. Ryzen 9 processor and RTX 3060 graphics. Rigorously tested & repasted for optimal thermals.</p>
-              <button class="btn btn-primary carousel-btn" onclick="app.showProductDetails(4)">Buy Now - $949</button>
+              <button class="btn btn-primary carousel-btn" onclick="app.showProductDetails(4)">Buy Now - ₹79,999</button>
             </div>
           </div>
           <!-- Slide 3 -->
@@ -95,7 +98,7 @@
               <span class="carousel-tag">Creator Pick</span>
               <h2 class="carousel-title">Dell XPS 15 9530</h2>
               <p class="carousel-desc">i9 processor, 32GB RAM, and RTX 4060 graphics. Stunning OLED display and premium carbon fiber deck. Condition: Excellent.</p>
-              <button class="btn btn-primary carousel-btn" onclick="app.showProductDetails(2)">View Laptop - $1,299</button>
+              <button class="btn btn-primary carousel-btn" onclick="app.showProductDetails(2)">View Laptop - ₹1,14,999</button>
             </div>
           </div>
         </div>
@@ -120,10 +123,10 @@
           <div class="filter-section">
             <h4 class="filter-section-title">Max Price</h4>
             <div class="price-slider-container">
-              <input type="range" id="price-range-slider" class="price-range-slider" min="300" max="1600" step="50" value="1600">
+              <input type="range" id="price-range-slider" class="price-range-slider" min="25000" max="150000" step="5000" value="150000">
               <div class="range-inputs">
-                <span>Min: $300</span>
-                <span id="price-slider-value">Max: $1600</span>
+                <span>Min: ₹25,000</span>
+                <span id="price-slider-value">Max: ₹1,50,000</span>
               </div>
             </div>
           </div>
@@ -168,7 +171,7 @@
 
         <!-- Right Side: Product Catalog Grid -->
         <div class="catalog-content">
-          <!-- Sort & Counter Bar (Desktop Only - mobile gets sticky bottom bar) -->
+          <!-- Sort & Counter Bar (Desktop Only) -->
           <div class="catalog-info-bar desktop-only">
             <span class="product-count" id="product-count">Showing 6 Laptops</span>
             
@@ -183,9 +186,12 @@
             </div>
           </div>
 
-          <!-- Mobile-only Info Counter -->
-          <div class="mobile-only mobile-product-counter">
+          <!-- Mobile-only Info Counter with separate Filter symbol button -->
+          <div class="mobile-only mobile-product-counter-row">
             <span id="mobile-product-count">Showing 6 Certified Laptops</span>
+            <button class="mobile-grid-filter-btn" id="mobile-grid-filter-trigger">
+              <i class="fa-solid fa-filter"></i> Filter
+            </button>
           </div>
 
           <!-- Product Grid (adaptive 2-col on mobile) -->
@@ -209,7 +215,7 @@
         <span id="breadcrumb-model" style="color: var(--text-primary);">Model</span>
       </nav>
 
-      <!-- Mobile-only Product Title (Placed at top on phones, hidden on desktop) -->
+      <!-- Mobile-only Product Title -->
       <div class="mobile-title-block mobile-only">
         <span class="brand-title" id="mobile-detail-brand">Brand Name</span>
         <h1 class="detail-title" id="mobile-detail-title">Laptop Model Name</h1>
@@ -241,7 +247,7 @@
             <!-- Thumbnails inserted here -->
           </div>
 
-          <!-- Action Buttons (Sticky/Floating on Mobile, styled in CSS) -->
+          <!-- Action Buttons (Sticky/Floating on Mobile) -->
           <div class="action-buttons-row" id="detail-actions-bar">
             <button class="btn btn-secondary" id="detail-add-to-cart-btn">
               <i class="fa-solid fa-cart-shopping"></i> Add to Cart
@@ -271,11 +277,11 @@
           <!-- Price card -->
           <div class="detail-price-panel">
             <div class="detail-price-row">
-              <span class="detail-a2b-price text-gradient" id="detail-price">$0</span>
-              <span class="detail-orig-price" id="detail-orig-price">$0</span>
+              <span class="detail-a2b-price text-gradient" id="detail-price">₹0</span>
+              <span class="detail-orig-price" id="detail-orig-price">₹0</span>
               <span class="discount-tag" id="detail-discount">0% OFF</span>
             </div>
-            <div class="detail-saving-msg" id="detail-savings">You Save $0 on retail price!</div>
+            <div class="detail-saving-msg" id="detail-savings">You Save ₹0 on retail price!</div>
           </div>
 
           <!-- Pin-code Availability Checker -->
@@ -307,7 +313,7 @@
               <div class="offer-item">
                 <i class="fa-solid fa-circle-check offer-icon"></i>
                 <div>
-                  <span class="offer-bold">Eco Exchange Discount:</span> Trade in your old, broken laptop for up to $150 credit.
+                  <span class="offer-bold">Eco Exchange Discount:</span> Trade in your old, broken laptop for up to ₹12,000 credit.
                 </div>
               </div>
             </div>
@@ -469,11 +475,11 @@
       <div class="price-summary-box">
         <div class="summary-row">
           <span>Subtotal</span>
-          <span id="cart-subtotal">$0</span>
+          <span id="cart-subtotal">₹0</span>
         </div>
         <div class="summary-row">
           <span>A2B Instant Saving</span>
-          <span id="cart-savings" class="summary-row.savings">$0</span>
+          <span id="cart-savings" class="summary-row.savings">₹0</span>
         </div>
         <div class="summary-row">
           <span>Delivery Charges</span>
@@ -481,7 +487,7 @@
         </div>
         <div class="summary-row total">
           <span>Total Amount</span>
-          <span id="cart-total">$0</span>
+          <span id="cart-total">₹0</span>
         </div>
       </div>
       <button class="btn btn-primary" style="width: 100%;" id="checkout-btn">
