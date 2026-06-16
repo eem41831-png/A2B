@@ -325,13 +325,33 @@ class A2BApp {
   }
 
   loadTheme() {
-    const isBW = localStorage.getItem('theme-bw') === 'true';
-    if (isBW) {
-      document.body.classList.add('theme-bw');
-      const icon = this.dom.themeToggleBtn.querySelector('i');
-      const text = this.dom.themeToggleBtn.querySelector('.desktop-only');
-      if (text) text.textContent = 'Color Mode';
-      if (icon) icon.className = 'fa-solid fa-palette';
+    const savedTheme = localStorage.getItem('selected-theme') || 'normal';
+    this.applyTheme(savedTheme);
+  }
+
+  applyTheme(themeName) {
+    document.body.classList.remove('theme-normal', 'theme-dark', 'theme-light', 'theme-bw');
+    document.body.classList.add(`theme-${themeName}`);
+    localStorage.setItem('selected-theme', themeName);
+    
+    const options = document.querySelectorAll('.theme-opt-btn');
+    options.forEach(opt => {
+      if (opt.dataset.theme === themeName) {
+        opt.classList.add('active');
+      } else {
+        opt.classList.remove('active');
+      }
+    });
+
+    const icon = this.dom.themeToggleBtn.querySelector('i');
+    if (icon) {
+      if (themeName === 'light') {
+        icon.className = 'fa-solid fa-sun';
+      } else if (themeName === 'dark') {
+        icon.className = 'fa-solid fa-moon';
+      } else {
+        icon.className = 'fa-solid fa-palette';
+      }
     }
   }
 
@@ -393,20 +413,28 @@ class A2BApp {
       this.closeMobileSortBottomSheet();
     });
 
-    // Theme Toggle (B&W Mode)
-    this.dom.themeToggleBtn.addEventListener('click', () => {
-      document.body.classList.toggle('theme-bw');
-      const isBW = document.body.classList.contains('theme-bw');
-      localStorage.setItem('theme-bw', isBW ? 'true' : 'false');
-      
-      const icon = this.dom.themeToggleBtn.querySelector('i');
-      const text = this.dom.themeToggleBtn.querySelector('.desktop-only');
-      if (isBW) {
-        if (text) text.textContent = 'Color Mode';
-        if (icon) icon.className = 'fa-solid fa-palette';
-      } else {
-        if (text) text.textContent = 'B&W Mode';
-        if (icon) icon.className = 'fa-solid fa-circle-half-stroke';
+    // Theme Dropdown Toggle
+    this.dom.themeToggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const dropdown = document.getElementById('theme-dropdown');
+      dropdown.classList.toggle('open');
+    });
+
+    // Theme Option Click Handler
+    const themeOptions = document.querySelectorAll('.theme-opt-btn');
+    themeOptions.forEach(opt => {
+      opt.addEventListener('click', (e) => {
+        const theme = opt.dataset.theme;
+        this.applyTheme(theme);
+        document.getElementById('theme-dropdown').classList.remove('open');
+      });
+    });
+
+    // Click Outside Theme Dropdown close
+    document.addEventListener('click', (e) => {
+      const dropdown = document.getElementById('theme-dropdown');
+      if (dropdown && !this.dom.themeToggleBtn.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.remove('open');
       }
     });
 

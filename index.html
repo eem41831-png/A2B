@@ -34,12 +34,28 @@
           <span id="pincode-display">Select Location</span>
         </div>
 
-        <!-- Navigation Actions (Theme Toggle, Wishlist & Cart) -->
+        <!-- Navigation Actions (Theme Switcher, Wishlist & Cart) -->
         <div class="nav-actions">
-          <button class="nav-btn" id="theme-toggle-btn" title="Toggle Black & White Mode">
-            <i class="fa-solid fa-circle-half-stroke"></i>
-            <span class="desktop-only">B&W Mode</span>
-          </button>
+          <div class="theme-dropdown-container">
+            <button class="nav-btn" id="theme-toggle-btn" title="Switch Theme">
+              <i class="fa-solid fa-palette"></i>
+              <span class="desktop-only">Themes</span>
+            </button>
+            <div id="theme-dropdown" class="theme-dropdown">
+              <button class="theme-opt-btn" data-theme="normal">
+                <span class="theme-dot" style="background: linear-gradient(135deg, #71717a 0%, #38bdf8 100%);"></span>
+                Normal (Gray & Sky)
+              </button>
+              <button class="theme-opt-btn" data-theme="dark">
+                <span class="theme-dot" style="background: linear-gradient(135deg, #05070a 0%, #3b82f6 100%);"></span>
+                Dark Mode
+              </button>
+              <button class="theme-opt-btn" data-theme="light">
+                <span class="theme-dot" style="background: linear-gradient(135deg, #ffffff 0%, #2563eb 100%); border: 1px solid #ccc;"></span>
+                Light Mode
+              </button>
+            </div>
+          </div>
 
           <button class="nav-btn" id="wishlist-btn" title="View Wishlist">
             <i class="fa-regular fa-heart"></i>
