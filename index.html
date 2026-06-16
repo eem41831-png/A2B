@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A2B Laptops | Certified Pre-Loved Laptops</title>
+  
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Drawer Backdrop -->
+  <div id="drawer-backdrop" class="drawer-backdrop"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="container header-container">
+      <!-- Logo -->
+      <a href="#" class="logo" id="logo-link">
+        <div class="logo-icon bg-gradient">A2B</div>
+        <span class="logo-text text-gradient">A2B Laptops</span>
+      </a>
+
+      <!-- Pincode Display Indicator -->
+      <div class="pincode-btn" id="header-pincode-btn">
+        <i class="fa-solid fa-location-dot"></i>
+        <span id="pincode-display">Select Location</span>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="search-wrapper">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input type="text" id="search-input" class="search-bar" placeholder="Search brands, processors, specs (e.g. MacBook, i7)...">
+        <div id="search-suggestions" class="search-suggestions"></div>
+      </div>
+
+      <!-- Navigation Actions -->
+      <div class="nav-actions">
+        <!-- Wishlist -->
+        <button class="nav-btn" id="wishlist-btn" title="View Wishlist">
+          <i class="fa-regular fa-heart"></i>
+          <span>Wishlist</span>
+          <span class="nav-badge" id="wishlist-count" style="display: none;">0</span>
+        </button>
+
+        <!-- Cart Trigger -->
+        <button class="nav-btn" id="cart-btn" title="View Cart">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span>Cart</span>
+          <span class="nav-badge" id="cart-count" style="display: none;">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="container">
+
+    <!-- View 1: Catalog Storefront -->
+    <section id="catalog-view" class="view-section active">
+      <!-- Hero Carousel -->
+      <div class="hero-carousel">
+        <div class="carousel-track" id="carousel-track">
+          <!-- Slide 1 -->
+          <div class="carousel-slide" style="background: url('assets/macbook.png') no-repeat right 10% center/contain;">
+            <div class="carousel-overlay"></div>
+            <div class="carousel-content">
+              <span class="carousel-tag">Featured Deal</span>
+              <h2 class="carousel-title">MacBook Pro 14" (M2 Pro)</h2>
+              <p class="carousel-desc">Get the power of M2 Pro at a fraction of the cost. A2B Certified Refurbished with 1-Year warranty, Like New condition.</p>
+              <button class="btn btn-primary carousel-btn" onclick="app.showProductDetails(1)">Shop Deal - $1,499</button>
+            </div>
+          </div>
+          <!-- Slide 2 -->
+          <div class="carousel-slide" style="background: url('assets/asus_rog.png') no-repeat right 10% center/contain;">
+            <div class="carousel-overlay"></div>
+            <div class="carousel-content">
+              <span class="carousel-tag">Gaming Power</span>
+              <h2 class="carousel-title">ASUS ROG Zephyrus G14</h2>
+              <p class="carousel-desc">Unleash beastly performance. Ryzen 9 processor and RTX 3060 graphics. Rigorously tested & repasted for optimal thermals.</p>
+              <button class="btn btn-primary carousel-btn" onclick="app.showProductDetails(4)">Buy Now - $949</button>
+            </div>
+          </div>
+          <!-- Slide 3 -->
+          <div class="carousel-slide" style="background: url('assets/dell_xps.png') no-repeat right 10% center/contain;">
+            <div class="carousel-overlay"></div>
+            <div class="carousel-content">
+              <span class="carousel-tag">Creator Pick</span>
+              <h2 class="carousel-title">Dell XPS 15 9530</h2>
+              <p class="carousel-desc">i9 processor, 32GB RAM, and RTX 4060 graphics. Stunning OLED display and premium carbon fiber deck. Condition: Excellent.</p>
+              <button class="btn btn-primary carousel-btn" onclick="app.showProductDetails(2)">View Laptop - $1,299</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Carousel Controls -->
+        <button class="carousel-arrow prev" id="carousel-prev-btn"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="carousel-arrow next" id="carousel-next-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        <div class="carousel-dots" id="carousel-dots"></div>
+      </div>
+
+      <!-- Catalog Layout Grid -->
+      <div class="catalog-layout">
+        <!-- Left Sidebar: Filters -->
+        <aside class="filter-sidebar">
+          <div class="filter-header">
+            <span class="filter-title">Filters</span>
+            <span class="clear-all" id="clear-filters-btn">Clear All</span>
+          </div>
+
+          <!-- Price Slider -->
+          <div class="filter-section">
+            <h4 class="filter-section-title">Max Price</h4>
+            <div class="price-slider-container">
+              <input type="range" id="price-range-slider" class="price-range-slider" min="300" max="1600" step="50" value="1600">
+              <div class="range-inputs">
+                <span>Min: $300</span>
+                <span id="price-slider-value">Max: $1600</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Brand Filter -->
+          <div class="filter-section">
+            <h4 class="filter-section-title">Brand</h4>
+            <div class="filter-options" id="brand-filters">
+              <!-- Dynamically Populated -->
+            </div>
+          </div>
+
+          <!-- Condition Grade Filter -->
+          <div class="filter-section">
+            <h4 class="filter-section-title">Condition Grade</h4>
+            <div class="filter-options" id="condition-filters">
+              <!-- Dynamically Populated -->
+            </div>
+          </div>
+
+          <!-- RAM Filter -->
+          <div class="filter-section">
+            <h4 class="filter-section-title">RAM Size</h4>
+            <div class="filter-options" id="ram-filters">
+              <!-- Dynamically Populated -->
+            </div>
+          </div>
+
+          <!-- Processor Filter -->
+          <div class="filter-section">
+            <h4 class="filter-section-title">Processor</h4>
+            <div class="filter-options" id="processor-filters">
+              <!-- Dynamically Populated -->
+            </div>
+          </div>
+        </aside>
+
+        <!-- Right Side: Product Catalog Grid -->
+        <div class="catalog-content">
+          <!-- Sort & Counter Bar -->
+          <div class="catalog-info-bar">
+            <span class="product-count" id="product-count">Showing 6 Laptops</span>
+            
+            <div class="sort-wrapper">
+              <span class="sort-label">Sort by:</span>
+              <div class="sort-options-tabs" id="sort-tabs">
+                <span class="sort-tab active" data-sort="popular">Popularity</span>
+                <span class="sort-tab" data-sort="price-asc">Price: Low to High</span>
+                <span class="sort-tab" data-sort="price-desc">Price: High to Low</span>
+                <span class="sort-tab" data-sort="rating">Customer Ratings</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product Grid -->
+          <div class="product-grid" id="product-grid">
+            <!-- Dynamically populated product cards -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- View 2: Product Detail Section -->
+    <section id="detail-view" class="view-section">
+      <!-- Breadcrumbs -->
+      <nav class="breadcrumbs">
+        <span onclick="app.showCatalogView()">Home</span>
+        <i class="fa-solid fa-chevron-right"></i>
+        <span>Laptops</span>
+        <i class="fa-solid fa-chevron-right"></i>
+        <span id="breadcrumb-brand">Brand</span>
+        <i class="fa-solid fa-chevron-right"></i>
+        <span id="breadcrumb-model" style="color: var(--text-primary);">Model</span>
+      </nav>
+
+      <!-- Grid Layout for Detail View -->
+      <div class="detail-container">
+        
+        <!-- Left Column: Gallery & Purchase Actions -->
+        <div class="detail-media-panel">
+          <div class="main-preview-container">
+            <div class="detail-certified-banner">
+              <i class="fa-solid fa-circle-check"></i>
+              <span>A2B Certified Refurbished</span>
+            </div>
+            <img src="" alt="Active Laptop Preview" id="detail-main-img">
+          </div>
+          
+          <!-- Thumbnail Selector -->
+          <div class="thumb-track" id="detail-thumb-track">
+            <!-- Thumbnails inserted here -->
+          </div>
+
+          <!-- Sticky / Action Buttons -->
+          <div class="action-buttons-row">
+            <button class="btn btn-secondary" id="detail-add-to-cart-btn">
+              <i class="fa-solid fa-cart-shopping"></i> Add to Cart
+            </button>
+            <button class="btn btn-primary" id="detail-buy-now-btn">
+              <i class="fa-solid fa-bolt"></i> Buy Now
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Column: Product Detail & Reviews Info -->
+        <div class="detail-info-panel">
+          <div>
+            <span class="brand-title" id="detail-brand">Brand Name</span>
+            <h1 class="detail-title" id="detail-title">Laptop Model Full Name</h1>
+          </div>
+
+          <!-- Ratings Summary & Condition badge -->
+          <div class="detail-ratings-row">
+            <div class="rating-badge" id="detail-rating-badge">
+              <span>0.0</span> <i class="fa-solid fa-star"></i>
+            </div>
+            <span class="rating-count" id="detail-review-count">0 Ratings & 0 Reviews</span>
+            <div class="detail-condition-badge" id="detail-condition-badge">
+              Like New
+            </div>
+          </div>
+
+          <!-- Price card -->
+          <div class="detail-price-panel">
+            <div class="detail-price-row">
+              <span class="detail-a2b-price text-gradient" id="detail-price">$0</span>
+              <span class="detail-orig-price" id="detail-orig-price">$0</span>
+              <span class="discount-tag" id="detail-discount">0% OFF</span>
+            </div>
+            <div class="detail-saving-msg" id="detail-savings">You Save $0 on retail price!</div>
+          </div>
+
+          <!-- Pin-code Availability Checker (inspired by flipkart check delivery) -->
+          <div class="pincode-checker">
+            <span class="pincode-label"><i class="fa-solid fa-truck"></i> Check Delivery Availability</span>
+            <div class="pincode-input-row">
+              <input type="text" class="pincode-input" id="pincode-input" placeholder="Enter 6-digit zip code..." maxlength="6">
+              <button class="pincode-check-btn" id="pincode-check-btn">Check</button>
+            </div>
+            <div id="pincode-feedback" class="pincode-feedback" style="display: none;"></div>
+          </div>
+
+          <!-- Brand/Seller Promos -->
+          <div class="offers-section">
+            <span class="offers-title"><i class="fa-solid fa-tags text-gradient"></i> Special Offers</span>
+            <div class="offers-list">
+              <div class="offer-item">
+                <i class="fa-solid fa-circle-check offer-icon"></i>
+                <div>
+                  <span class="offer-bold">A2B Assurance Plus:</span> 12-Month warranty covers parts, batteries, & keyboard.
+                </div>
+              </div>
+              <div class="offer-item">
+                <i class="fa-solid fa-circle-check offer-icon"></i>
+                <div>
+                  <span class="offer-bold">Bank Offer:</span> 5% Unlimited Cashback on A2B Co-branded Credit Cards.
+                </div>
+              </div>
+              <div class="offer-item">
+                <i class="fa-solid fa-circle-check offer-icon"></i>
+                <div>
+                  <span class="offer-bold">Eco Exchange Discount:</span> Trade in your old, broken laptop for up to $150 credit.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Specifications vs Reviews Tabs Navigation -->
+          <div>
+            <div class="tabs-navigation">
+              <button class="tab-btn active" data-tab="specs-tab">Specifications</button>
+              <button class="tab-btn" data-tab="reviews-tab">Ratings & Reviews</button>
+            </div>
+
+            <!-- Tab 1: Detailed Specifications Table -->
+            <div class="tab-content active" id="specs-tab">
+              <table class="specs-table" id="detail-specs-table">
+                <!-- Dynamically populated spec rows -->
+              </table>
+            </div>
+
+            <!-- Tab 2: Reviews & Feedback Breakdown -->
+            <div class="tab-content" id="reviews-tab">
+              <div class="reviews-tab-layout">
+                
+                <!-- Aggregate Column -->
+                <div class="ratings-summary-box">
+                  <span class="large-rating-number" id="reviews-agg-rating">4.8</span>
+                  <div class="detail-rating-stars" id="reviews-agg-stars">
+                    <!-- Dynamic Stars -->
+                  </div>
+                  <span class="total-reviews-count" id="reviews-agg-count">12 Reviews</span>
+                  
+                  <!-- Distribution Chart -->
+                  <div class="rating-bar-chart" id="reviews-distribution">
+                    <!-- Dynamic Bars -->
+                  </div>
+                </div>
+
+                <!-- Reviews List & Submission Panel -->
+                <div class="reviews-list-panel">
+                  <div class="reviews-header-row">
+                    <h3 class="offers-title">Customer Reviews</h3>
+                  </div>
+
+                  <div class="reviews-list" id="reviews-list-container">
+                    <!-- Dynamically populated user reviews -->
+                  </div>
+
+                  <!-- Submit Review Form -->
+                  <div class="review-form-box">
+                    <span class="review-form-title">Write a Review</span>
+                    <div class="form-rating-selector" id="form-rating-stars">
+                      <i class="fa-solid fa-star form-rating-star" data-rating="1"></i>
+                      <i class="fa-solid fa-star form-rating-star" data-rating="2"></i>
+                      <i class="fa-solid fa-star form-rating-star" data-rating="3"></i>
+                      <i class="fa-solid fa-star form-rating-star" data-rating="4"></i>
+                      <i class="fa-solid fa-star form-rating-star" data-rating="5"></i>
+                    </div>
+                    <div class="form-row">
+                      <input type="text" id="review-form-name" class="form-input" placeholder="Your Name">
+                      <input type="text" id="review-form-title" class="form-input" placeholder="Review Headline">
+                    </div>
+                    <textarea id="review-form-comment" class="form-textarea" placeholder="Detailed review text..."></textarea>
+                    <button class="btn btn-primary" style="align-self: flex-start; padding: 0.5rem 1.5rem; font-size: 0.9rem;" id="submit-review-btn">
+                      Submit Review
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Sticky Bottom Comparison Bar -->
+  <div id="compare-bar" class="compare-sticky-bar">
+    <div class="compare-bar-left">
+      <span class="compare-bar-title"><i class="fa-solid fa-scale-balanced text-gradient"></i> Compare Laptops</span>
+      <div class="compare-thumbnails-row" id="compare-thumbs-container">
+        <!-- Thumbnails of items checked for compare -->
+      </div>
+    </div>
+    <div class="compare-actions">
+      <span class="product-count" id="compare-items-count">0 items selected</span>
+      <button class="btn btn-compare-trigger" id="compare-now-btn">Compare Now</button>
+    </div>
+  </div>
+
+  <!-- Comparison Overlay Modal View -->
+  <div id="compare-modal" class="modal-overlay">
+    <div class="compare-modal-box">
+      <div class="compare-modal-header">
+        <h2 class="detail-title" style="font-size: 1.5rem;"><i class="fa-solid fa-scale-balanced text-gradient"></i> Side-by-Side Comparison</h2>
+        <button class="drawer-close" id="compare-modal-close-btn">&times;</button>
+      </div>
+      <div class="compare-table-container">
+        <table class="compare-table" id="comparison-table">
+          <!-- Populated dynamically -->
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cart Drawer -->
+  <div id="cart-drawer" class="drawer">
+    <div class="drawer-header">
+      <span class="drawer-title"><i class="fa-solid fa-cart-shopping text-gradient"></i> Shopping Cart</span>
+      <button class="drawer-close" id="cart-drawer-close">&times;</button>
+    </div>
+    <div class="drawer-body" id="cart-drawer-body">
+      <!-- Cart items or empty message -->
+    </div>
+    <div class="drawer-footer">
+      <div class="price-summary-box">
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span id="cart-subtotal">$0</span>
+        </div>
+        <div class="summary-row">
+          <span>A2B Instant Saving</span>
+          <span id="cart-savings" class="summary-row.savings">$0</span>
+        </div>
+        <div class="summary-row">
+          <span>Delivery Charges</span>
+          <span id="cart-delivery" style="color: var(--color-success);">FREE</span>
+        </div>
+        <div class="summary-row total">
+          <span>Total Amount</span>
+          <span id="cart-total">$0</span>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="width: 100%;" id="checkout-btn">
+        Proceed to Checkout
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="logo">
+            <div class="logo-icon bg-gradient">A2B</div>
+            <span class="logo-text text-gradient">A2B Laptops</span>
+          </div>
+          <p class="footer-desc">Premium pre-loved laptops, tested, certified, and restored to peak performance. Providing quality hardware for every pocket.</p>
+        </div>
+        <div class="footer-links-col">
+          <span class="footer-col-title">Shop</span>
+          <div class="footer-links">
+            <a href="#" onclick="app.filterByBrand('Apple')">MacBooks</a>
+            <a href="#" onclick="app.filterByBrand('Dell')">Dell XPS Series</a>
+            <a href="#" onclick="app.filterByBrand('Lenovo')">ThinkPad Business</a>
+            <a href="#" onclick="app.filterByBrand('ASUS')">ROG Gaming</a>
+          </div>
+        </div>
+        <div class="footer-links-col">
+          <span class="footer-col-title">Support</span>
+          <div class="footer-links">
+            <a href="#">Warranty Policy</a>
+            <a href="#">Return & Refund</a>
+            <a href="#">Refurbishment Grading</a>
+            <a href="#">FAQ</a>
+          </div>
+        </div>
+        <div class="footer-links-col">
+          <span class="footer-col-title">Contact</span>
+          <div class="footer-links" style="gap: 0.8rem;">
+            <span><i class="fa-solid fa-envelope" style="margin-right: 0.4rem;"></i> support@a2b.com</span>
+            <span><i class="fa-solid fa-phone" style="margin-right: 0.4rem;"></i> 1800-419-A2B (222)</span>
+            <span><i class="fa-solid fa-location-dot" style="margin-right: 0.4rem;"></i> Silicon Valley Tech Park, CA</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 A2B Refurbished Laptops. All rights reserved.</span>
+        <span>Made with <i class="fa-solid fa-heart" style="color: var(--color-danger);"></i> pair programming with Antigravity</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>
